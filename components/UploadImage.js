@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { TouchableOpacity, Text, Image, View, StyleSheet } from 'react-native';
+import { Button, Image, View, StyleSheet } from 'react-native';
 import * as ImagePicker from 'expo-image-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
@@ -25,7 +25,7 @@ export default function UploadImageScreen() {
       formData.append('picture', file, 'image.jpg');
 
       try {
-        const response = await fetch('http://192.168.101.10:8000/api/images/', {
+        const response = await fetch('http://192.168.1.117:8000/api/images/', {
           method: 'POST',
           body: formData,
           headers: {
@@ -64,10 +64,8 @@ export default function UploadImageScreen() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.btn} onPress={pickImage}>
-        <Text style={styles.btnText}>Pick an image from camera roll</Text>
-      </TouchableOpacity>
-      {image && <Image source={{ uri: image }} style={styles.image} resizeMode='contain' />}
+      <Button title="Pick an image from camera roll" onPress={pickImage} />
+      {image && <Image source={{ uri: image }} style={styles.image} />}
     </View>
   );
 }
@@ -79,20 +77,8 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   image: {
-    width: '50%',
-    height: 200,
+    width: '100%',
+    height: undefined,
     aspectRatio: 0.5,
   },
-  btn: {
-    backgroundColor: '#339989',
-    paddingVertical: 15,
-    paddingHorizontal: 20,
-    borderRadius: 25,
-    marginTop: 20,
-  },
-  btnText: {
-    color: 'white',
-    fontWeight: 'bold',
-    textAlign: 'center',
-  }
 });
