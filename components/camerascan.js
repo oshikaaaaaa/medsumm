@@ -1,32 +1,32 @@
 import * as React from 'react';
-import { useEffect } from 'react'; // Import useEffect for handling side effects
+import { useEffect } from 'react';
 import * as ImagePicker from 'expo-image-picker';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 const CameraScreen = ({ navigation }) => {
   useEffect(() => {
-    // Function to handle camera launch
     const openCamera = async () => {
       // Request camera permissions
       const { status } = await ImagePicker.requestCameraPermissionsAsync();
-      
+
       if (status !== 'granted') {
         alert('Camera permission denied');
         return;
       }
 
-      //launch camera
       try {
+        // Launch camera
         let result = await ImagePicker.launchCameraAsync({
-          cameraType: ImagePicker.CameraType.back,
-          allowsEditing: true, 
-          aspect: [1, 1], 
-          quality: 1, 
+          allowsEditing: true,
+          aspect: [1, 1],
+          quality: 1,
         });
 
         // Handle result
         if (!result.cancelled) {
-          console.log('Image captured:', result.uri);
-          // can navigate or perform other actions with the captured image here
+          console.log('Image captured:', result.assets[0].uri);
+          // Send the captured image to the server
+          sendImageToServer(result.assets[0].uri);
         }
       } catch (error) {
         console.error('Error launching camera:', error);
@@ -34,7 +34,39 @@ const CameraScreen = ({ navigation }) => {
     };
 
     openCamera();
-  }, []); 
+  }, []);
+
+  const sendImageToServer = async (imageUri) => {
+    const token = await AsyncStorage.getItem('token');
+    const formData = new FormData();
+    formData.append('picture', {
+      name: 'image.jpg',
+      type: 'image/jpeg',
+      uri: imageUri,
+    });
+
+    try {
+      const response = await fetch('http://192.168.1.106:8000/api/images/', {
+        method: 'POST',
+        body: formData,
+        headers: {
+          'Authorization': `Token ${token}`,
+          'Content-Type': 'multipart/form-data',
+        },
+      });
+
+      const data = await response.json();
+      console.log('Image upload response:', data);
+
+      if (response.ok) {
+        console.log('Image uploaded successfully');
+      } else {
+        console.error('Error uploading image:', data);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
 
   return null;
 };

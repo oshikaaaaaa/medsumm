@@ -21,15 +21,22 @@ export default function UploadImageScreen() {
       const token = await AsyncStorage.getItem('token');
 
       const formData = new FormData();
-      const file = await urlToBlob(result.assets[0].uri);
-      formData.append('picture', file, 'image.jpg');
+      formData.append('picture', {
+        name: 'image.jpg',
+        type: 'image/jpeg',
+        uri: result.assets[0].uri,
+      });
+
 
       try {
-        const response = await fetch('http://192.168.1.117:8000/api/images/', {
+        const response = await fetch('http://192.168.1.106:8000//api/images/', {
+        
           method: 'POST',
           body: formData,
           headers: {
             'Authorization': `Token ${token}`,
+            'Content-Type': 'multipart/form-data',
+
           },
         });
 

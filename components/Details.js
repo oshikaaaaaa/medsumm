@@ -16,7 +16,7 @@ function DetailsScreen({ navigation }) {
   const fetchData = async () => {
     try {
       const token = await AsyncStorage.getItem('token');
-      const response = await fetch('http://192.168.1.117:8000/api/images/', {
+      const response = await fetch('http://192.168.1.106:8000//api/images/', {
         headers: {
           'Authorization': `Token ${token}`,
           'Content-Type': 'application/json',
